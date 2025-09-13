@@ -30,82 +30,122 @@
   .button-main:active { background: #666; }
   .modal { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 100; }
   .modal-content { background: #222; padding: 20px; border-radius: 15px; text-align: center; width: 90%; max-width: 350px; }
-  .modal-content input { width: 80%; padding: 10px; margin: 10px 0; border-radius: 10px; border: none; }
+  .modal-content input { width: 80%; padding: 10px; margin: 10px 0; border-radius: 10px; border: none; text-align: center; }
   .modal-content button { padding: 10px 20px; border-radius: 10px; border: none; background: #555; color: #fff; font-size: 16px; margin-top: 10px; cursor: pointer; }
 </style>
 </head>
 <body>
-  <div class="header">
-    <p class="game-title">Ares Kombat</p>
-    <p class="game-subtitle">Return</p>
+
+<div class="header">
+  <p class="game-title">Ares Kombat</p>
+  <p class="game-subtitle">Return</p>
+</div>
+
+<!-- Модалки -->
+<div id="registerModal" class="modal">
+  <div class="modal-content">
+    <h2>Регистрация</h2>
+    <p>Введите имя:</p>
+    <input type="text" id="nameInput" placeholder="Ваше имя">
+    <p>Юзернейм (Telegram):</p>
+    <input type="text" id="usernameInput" placeholder="@username">
+    <button id="registerBtn">Зарегистрироваться</button>
   </div>
+</div>
 
-  <!-- Модалки -->
-  <div id="registerModal" class="modal">
-    <div class="modal-content">
-      <h2>Регистрация</h2>
-      <p>Введите имя:</p>
-      <input type="text" id="nameInput" placeholder="Ваше имя">
-      <p>Юзернейм (Telegram):</p>
-      <input type="text" id="usernameInput" placeholder="@username">
-      <button id="registerBtn">Зарегистрироваться</button>
-    </div>
+<div id="messageModal" class="modal">
+  <div class="modal-content">
+    <p id="messageText"></p>
+    <button id="closeMessageBtn">Ок</button>
   </div>
+</div>
 
-  <div id="messageModal" class="modal">
-    <div class="modal-content">
-      <p id="messageText"></p>
-      <button id="closeMessageBtn">Ок</button>
+<!-- Модалка магазина с чек-окном -->
+<div id="shopModal" class="modal">
+  <div class="modal-content" id="shopContent">
+    <h2>Магазин</h2>
+    <div id="shopItemsContainer"></div>
+    <div id="shopReceipt" class="hidden">
+      <p>Вы купили: <span id="receiptItem"></span></p>
+      <p>Цена: <span id="receiptPrice"></span> 🏆</p>
+      <input type="text" id="receiptCode" readonly>
+      <button id="copyReceiptBtn">Скопировать код и отправь пользователю @ares_musical</button>
     </div>
+    <button id="closeShopBtn">Закрыть</button>
   </div>
+</div>
 
-  <div class="content">
-    <div id="clickerView">
-      <div class="section-title">Кликер</div>
-      <div class="score-display">🏆: <span id="clickerScore">0</span></div>
-      <button class="button-main" id="clickerButton">👊 Нажми!</button>
-    </div>
-
-    <div id="classicView" class="hidden">
-      <h2>Классический заработок</h2>
-      <button class="button-main" id="earnButton">Забрать бонус</button>
-      <p>Следующая выдача через: <span id="earnTimer">0 ч</span></p>
-    </div>
-
-    <div id="profileView" class="hidden profile">
-      <div><b>Имя:</b> <span id="profileName"></span></div>
-      <div><b>Юзернейм:</b> <span id="profileUsername"></span></div>
-      <div><b>ID:</b> <span id="profileId"></span></div>
-      <hr>
-      <div><b>Общий 🏆:</b> <span id="totalBalance">0</span></div>
-      <hr>
-      <button id="openShopBtn">Магазин</button>
-      <button id="openPromoBtn">Промокоды</button>
-      <button id="openTasksBtn">Задания</button>
-      <button id="resetAccountBtn">Сбросить аккаунт</button>
-    </div>
+<!-- Модалка промокодов -->
+<div id="promoModal" class="modal">
+  <div class="modal-content">
+    <h2>Промокоды</h2>
+    <input type="text" id="promoInput" placeholder="Введите промокод">
+    <button id="applyPromoBtn">Активировать</button>
+    <button id="closePromoBtn">Закрыть</button>
   </div>
+</div>
 
-  <div class="bottom-menu">
-    <button id="tabClicker" class="active">Кликер</button>
-    <button id="tabClassic">Классика</button>
-    <button id="tabProfile">Профиль</button>
-  </div><script>
+<!-- Модалка заданий -->
+<div id="tasksModal" class="modal">
+  <div class="modal-content" id="tasksContent">
+    <h2>Задания</h2>
+    <div id="tasksContainer"></div>
+    <button id="closeTasksBtn">Закрыть</button>
+  </div>
+</div>
+
+<!-- Модалка сброса аккаунта -->
+<div id="resetModal" class="modal">
+  <div class="modal-content">
+    <h2>Сброс аккаунта</h2>
+    <p>Вы действительно хотите удалить аккаунт? Все данные будут потеряны!</p>
+    <button id="confirmResetBtn">Да, сбросить</button>
+    <button id="cancelResetBtn">Отмена</button>
+  </div>
+</div>
+
+<!-- Контент -->
+<div class="content">
+  <div id="clickerView">
+    <div class="section-title">Кликер</div>
+    <div class="score-display">🏆: <span id="clickerScore">0</span></div>
+    <button class="button-main" id="clickerButton">👊 Нажми!</button>
+  </div>
+  <div id="classicView" class="hidden">
+    <h2>Классический заработок</h2>
+    <button class="button-main" id="earnButton">Забрать 5000 🏆</button>
+    <p>Следующая выдача через: <span id="earnTimer">0 ч</span></p>
+  </div>
+  <div id="profileView" class="hidden profile">
+    <div><b>Имя:</b> <span id="profileName"></span></div>
+    <div><b>Юзернейм:</b> <span id="profileUsername"></span></div>
+    <div><b>ID:</b> <span id="profileId"></span></div>
+    <hr>
+    <div><b>Баланс 🏆:</b> <span id="totalBalance">0</span></div>
+    <hr>
+    <button id="openShopBtn">Магазин</button>
+    <button id="openPromoBtn">Промокоды</button>
+    <button id="openTasksBtn">Задания</button>
+    <button id="openResetBtn">Сбросить аккаунт</button>
+  </div>
+</div>
+
+<div class="bottom-menu">
+  <button id="tabClicker" class="active">Кликер</button>
+  <button id="tabClassic">Классика</button>
+  <button id="tabProfile">Профиль</button>
+</div><script>
 document.addEventListener("DOMContentLoaded", () => {
-  // ===== Переменные =====
-  let clickerScore = parseInt(localStorage.getItem("clickerScore")) || 0;
-  let classicScore = parseInt(localStorage.getItem("classicScore")) || 0;
-  let totalScore = clickerScore + classicScore;
+  // ===== ПЕРЕМЕННЫЕ =====
+  let score = parseInt(localStorage.getItem("score")) || 0; // единый баланс
   let lastEarnTime = parseInt(localStorage.getItem("lastEarnTime")) || 0;
-
   let name = localStorage.getItem("name");
   let username = localStorage.getItem("username");
   let userId = localStorage.getItem("userId");
   let usedPromos = JSON.parse(localStorage.getItem("usedPromos") || "[]");
-  let tasksDone = JSON.parse(localStorage.getItem("tasksDone") || "[]");
 
-  // ===== Элементы =====
-  const clickerDisplay = document.getElementById("clickerScore");
+  // Элементы
+  const clickerScoreEl = document.getElementById("clickerScore");
   const clickerButton = document.getElementById("clickerButton");
   const earnButton = document.getElementById("earnButton");
   const earnTimer = document.getElementById("earnTimer");
@@ -126,39 +166,55 @@ document.addEventListener("DOMContentLoaded", () => {
   const profileUsername = document.getElementById("profileUsername");
   const profileId = document.getElementById("profileId");
   const totalBalanceEl = document.getElementById("totalBalance");
-  const openShopBtn = document.getElementById("openShopBtn");
-  const shopModal = document.createElement("div");
-  const openPromoBtn = document.getElementById("openPromoBtn");
-  const promoModal = document.createElement("div");
-  const openTasksBtn = document.getElementById("openTasksBtn");
-  const tasksModal = document.createElement("div");
-  const resetAccountBtn = document.getElementById("resetAccountBtn");
 
-  // ===== Данные =====
+  const openShopBtn = document.getElementById("openShopBtn");
+  const shopModal = document.getElementById("shopModal");
+  const shopItemsContainer = document.getElementById("shopItemsContainer");
+  const shopReceipt = document.getElementById("shopReceipt");
+  const receiptItem = document.getElementById("receiptItem");
+  const receiptPrice = document.getElementById("receiptPrice");
+  const receiptCode = document.getElementById("receiptCode");
+  const copyReceiptBtn = document.getElementById("copyReceiptBtn");
+  const closeShopBtn = document.getElementById("closeShopBtn");
+
+  const openPromoBtn = document.getElementById("openPromoBtn");
+  const promoModal = document.getElementById("promoModal");
+  const promoInput = document.getElementById("promoInput");
+  const applyPromoBtn = document.getElementById("applyPromoBtn");
+  const closePromoBtn = document.getElementById("closePromoBtn");
+
+  const openTasksBtn = document.getElementById("openTasksBtn");
+  const tasksModal = document.getElementById("tasksModal");
+  const tasksContainer = document.getElementById("tasksContainer");
+  const closeTasksBtn = document.getElementById("closeTasksBtn");
+
+  const resetModal = document.getElementById("resetModal");
+  const openResetBtn = document.getElementById("openResetBtn");
+  const confirmResetBtn = document.getElementById("confirmResetBtn");
+  const cancelResetBtn = document.getElementById("cancelResetBtn");
+
+  // ===== МАГАЗИН =====
   const shopItems = [
-    { name:"Аватарка от ИИ", price:3500, code:"AOI" },
-    { name:"Аватарка на заказ", price:5500, code:"AOINZ" },
-    { name:"Обои на телефон", price:7500, code:"ONT" }
+    { name: "Аватарка от ИИ", price: 3500, code: "AOI" },
+    { name: "Аватарка от ИИ на заказ", price: 5500, code: "AOINZ" },
+    { name: "Обои на телефон", price: 7500, code: "ONT" }
   ];
 
   const promos = {
-    "ARESKOMBATSTART":3000,
-    "AUTUMNKOMBAT25":4000,
-    "SCHOOLPREMIUM01":5500
+    "ARESKOMBATSTART": 3000,
+    "AUTUMNKOMBAT25": 4000,
+    "SCHOOLPREMIUM01": 5500
   };
 
   const tasks = [
-    { id:"dailyBonus", text:"Получить ежедневный бонус", reward:1000, type:"classic" },
-    { id:"promoTask", text:"Активировать любой промокод", reward:2000, type:"promo" }
+    { id: "daily", text: "Получить ежедневный бонус", reward: 1000 }
   ];
 
-  // ===== Функции =====
-  function updateBalances() {
-    totalScore = clickerScore + classicScore;
-    clickerDisplay.textContent = totalScore;
-    totalBalanceEl.textContent = totalScore;
-    localStorage.setItem("clickerScore", clickerScore);
-    localStorage.setItem("classicScore", classicScore);
+  // ===== ФУНКЦИИ =====
+  function updateBalance() {
+    clickerScoreEl.textContent = score;
+    totalBalanceEl.textContent = score;
+    localStorage.setItem("score", score);
   }
 
   function openModal(text) {
@@ -181,186 +237,150 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateTimer() {
     let now = Date.now();
     let diff = now - lastEarnTime;
-    let wait = 8 * 60 * 60 * 1000; // 8 часов
-    if(diff >= wait){
+    let wait = 8*60*60*1000; // 8 часов
+    if(diff>=wait){
       earnButton.disabled = false;
       earnTimer.textContent = "доступно!";
-    } else {
+    }else{
       earnButton.disabled = true;
-      let remain = wait - diff;
-      let hours = Math.floor(remain / (1000*60*60));
-      let minutes = Math.floor((remain % (1000*60*60)) / (1000*60));
+      let remain = wait-diff;
+      let hours = Math.floor(remain/3600000);
+      let minutes = Math.floor((remain%3600000)/60000);
       earnTimer.textContent = `${hours}ч ${minutes}м`;
     }
   }
 
   function renderShop() {
-    shopModal.innerHTML = `<div class="modal-content">
-      <h2>Магазин</h2>
-      <div id="shopItemsContainer"></div>
-      <button id="closeShopBtn">Закрыть</button>
-    </div>`;
-    shopModal.className = "modal";
-    document.body.appendChild(shopModal);
-
-    const container = document.getElementById("shopItemsContainer");
+    shopItemsContainer.innerHTML = "";
     shopItems.forEach(item=>{
       let btn = document.createElement("button");
       btn.textContent = `${item.name} - ${item.price} 🏆`;
-      btn.addEventListener("click",()=>{
-        if(totalScore >= item.price){
-          totalScore -= item.price;
-          clickerScore = totalScore; // единственный баланс
-          classicScore = 0;
-          updateBalances();
-          openModal(`Вы купили "${item.name}" за ${item.price} 🏆. Ваш код: ${item.code}`);
+      btn.addEventListener("click", ()=>{
+        if(score>=item.price){
+          score -= item.price;
+          updateBalance();
+          receiptItem.textContent = item.name;
+          receiptPrice.textContent = item.price;
+          receiptCode.value = item.code + " @ares_musical";
+          shopReceipt.classList.remove("hidden");
         } else openModal("Недостаточно кубков!");
       });
-      container.appendChild(btn);
-    });
-
-    document.getElementById("closeShopBtn").addEventListener("click",()=>{
-      shopModal.style.display = "none";
+      shopItemsContainer.appendChild(btn);
     });
   }
 
-  function renderPromos() {
-    promoModal.innerHTML = `<div class="modal-content">
-      <h2>Промокоды</h2>
-      <input type="text" id="promoInput" placeholder="Введите промокод"><br>
-      <button id="applyPromoBtn">Активировать</button><br>
-      <button id="closePromoBtn">Закрыть</button>
-    </div>`;
-    promoModal.className = "modal";
-    document.body.appendChild(promoModal);
-
-    document.getElementById("applyPromoBtn").addEventListener("click",()=>{
-      let code = document.getElementById("promoInput").value.trim();
-      if(promos[code]){
-        if(usedPromos.includes(code)) { openModal("Этот промокод уже использован!"); return; }
-        totalScore += promos[code];
-        clickerScore = totalScore;
-        classicScore = 0;
-        usedPromos.push(code);
-        localStorage.setItem("usedPromos", JSON.stringify(usedPromos));
-        updateBalances();
-        openModal(`Вы активировали промокод "${code}" и получили ${promos[code]} 🏆!`);
-      } else openModal("Неверный промокод!");
-    });
-
-    document.getElementById("closePromoBtn").addEventListener("click",()=>{
-      promoModal.style.display = "none";
-    });
-  }
-
-  function renderTasks() {
-    tasksModal.innerHTML = `<div class="modal-content">
-      <h2>Задания</h2>
-      <div id="tasksContainer"></div>
-      <button id="closeTasksBtn">Закрыть</button>
-    </div>`;
-    tasksModal.className = "modal";
-    document.body.appendChild(tasksModal);
-
-    const container = document.getElementById("tasksContainer");
-    tasks.forEach(task=>{
-      if(!tasksDone.includes(task.id)){
-        let div = document.createElement("div");
-        div.style.margin = "5px 0";
-        let text = document.createElement("span");
-        text.textContent = `${task.text} (Награда: ${task.reward} 🏆)`;
-        div.appendChild(text);
-
-        let btn = document.createElement("button");
-        btn.style.marginLeft = "10px";
-        if(task.type==="promo"){ btn.textContent="Забрать"; btn.disabled=true; }
-        else if(task.type==="classic" && lastEarnTime){ btn.textContent="Забрать"; btn.addEventListener("click",()=>{
-          totalScore += task.reward;
-          clickerScore = totalScore;
-          classicScore = 0;
-          tasksDone.push(task.id);
-          localStorage.setItem("tasksDone", JSON.stringify(tasksDone));
-          updateBalances();
-          renderTasks();
-          openModal(`Вы забрали награду за задание: ${task.reward} 🏆`);
-        }); }
-        div.appendChild(btn);
-        container.appendChild(div);
-      }
-    });
-
-    document.getElementById("closeTasksBtn").addEventListener("click",()=>{
-      tasksModal.style.display = "none";
-    });
-  }
-
-  // ===== События =====
-  clickerButton.addEventListener("click",()=>{
-    totalScore++;
-    clickerScore = totalScore;
-    classicScore = 0;
-    updateBalances();
+  copyReceiptBtn.addEventListener("click", ()=>{
+    receiptCode.select();
+    receiptCode.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    openModal("Код скопирован!");
   });
 
-  earnButton.addEventListener("click",()=>{
-    totalScore += 5000;
-    clickerScore = totalScore;
-    classicScore = 0;
+  function renderTasks() {
+    tasksContainer.innerHTML = "";
+    tasks.forEach(task=>{
+      let div = document.createElement("div");
+      div.style.margin="5px 0";
+      let text = document.createElement("span");
+      text.textContent = `${task.text} (Награда: ${task.reward} 🏆)`;
+      div.appendChild(text);
+      if(score >= task.reward){
+        let btn = document.createElement("button");
+        btn.textContent = "Забрать";
+        btn.style.marginLeft="10px";
+        btn.addEventListener("click", ()=>{
+          score += task.reward;
+          localStorage.setItem("score", score);
+          updateBalance();
+          div.remove();
+          openModal(`Вы забрали награду: ${task.reward} 🏆`);
+        });
+        div.appendChild(btn);
+      }
+      tasksContainer.appendChild(div);
+    });
+  }
+
+  // ===== СОБЫТИЯ =====
+  clickerButton.addEventListener("click", ()=>{
+    score++;
+    updateBalance();
+  });
+
+  earnButton.addEventListener("click", ()=>{
+    score += 5000;
     lastEarnTime = Date.now();
     localStorage.setItem("lastEarnTime", lastEarnTime);
-    updateBalances();
+    updateBalance();
     updateTimer();
   });
 
-  tabClicker.addEventListener("click",()=>showTab("clicker"));
-  tabClassic.addEventListener("click",()=>showTab("classic"));
-  tabProfile.addEventListener("click",()=>showTab("profile"));
+  tabClicker.addEventListener("click", ()=>showTab("clicker"));
+  tabClassic.addEventListener("click", ()=>showTab("classic"));
+  tabProfile.addEventListener("click", ()=>showTab("profile"));
 
-  closeMessageBtn.addEventListener("click",()=>{messageModal.style.display="none";});
+  closeMessageBtn.addEventListener("click", ()=>messageModal.style.display="none");
 
-  registerBtn.addEventListener("click",()=>{
-    let n = nameInput.value.trim();
-    let u = usernameInput.value.trim();
-    if(!n || !u){ openModal("Заполните все поля!"); return; }
-    name = n; username = u;
+  registerBtn.addEventListener("click", ()=>{
+    let enteredName = nameInput.value.trim();
+    let enteredUsername = usernameInput.value.trim();
+    if(!enteredName || !enteredUsername){ openModal("Заполните все поля!"); return; }
+    name = enteredName;
+    username = enteredUsername;
     userId = Math.floor(Math.random()*1000000);
-    localStorage.setItem("name",name);
-    localStorage.setItem("username",username);
-    localStorage.setItem("userId",userId);
+    localStorage.setItem("name", name);
+    localStorage.setItem("username", username);
+    localStorage.setItem("userId", userId);
     profileName.textContent = name;
     profileUsername.textContent = username;
     profileId.textContent = userId;
-    registerModal.style.display = "none";
+    registerModal.style.display="none";
   });
 
   openShopBtn.addEventListener("click", ()=>{
     renderShop();
-    shopModal.style.display = "flex";
+    shopModal.style.display="flex";
   });
+  closeShopBtn.addEventListener("click", ()=>shopModal.style.display="none");
 
-  openPromoBtn.addEventListener("click", ()=>{
-    renderPromos();
-    promoModal.style.display = "flex";
+  openPromoBtn.addEventListener("click", ()=>promoModal.style.display="flex");
+  closePromoBtn.addEventListener("click", ()=>promoModal.style.display="none");
+
+  applyPromoBtn.addEventListener("click", ()=>{
+    let code = promoInput.value.trim();
+    if(promos[code]){
+      if(usedPromos.includes(code)){ openModal("Этот промокод уже использован!"); return; }
+      score += promos[code];
+      usedPromos.push(code);
+      localStorage.setItem("usedPromos", JSON.stringify(usedPromos));
+      updateBalance();
+      openModal(`Вы активировали промокод "${code}" и получили ${promos[code]} 🏆!`);
+    } else openModal("Неверный промокод!");
   });
 
   openTasksBtn.addEventListener("click", ()=>{
     renderTasks();
-    tasksModal.style.display = "flex";
+    tasksModal.style.display="flex";
+  });
+  closeTasksBtn.addEventListener("click", ()=>tasksModal.style.display="none");
+
+  openResetBtn.addEventListener("click", ()=>resetModal.style.display="flex");
+  cancelResetBtn.addEventListener("click", ()=>resetModal.style.display="none");
+  confirmResetBtn.addEventListener("click", ()=>{
+    localStorage.clear();
+    location.reload();
   });
 
-  resetAccountBtn.addEventListener("click", ()=>{
-    if(confirm("Вы действительно хотите сбросить аккаунт?")){
-      localStorage.clear();
-      location.reload();
-    }
-  });
+  // ===== ИНИЦИАЛИЗАЦИЯ =====
+  if(!name || !username || !userId){ registerModal.style.display="flex"; }
+  else {
+    profileName.textContent = name;
+    profileUsername.textContent = username;
+    profileId.textContent = userId;
+  }
 
-  // ===== Инициализация =====
-  if(!name || !username || !userId){ registerModal.style.display = "flex"; }
-  else { profileName.textContent = name; profileUsername.textContent = username; profileId.textContent = userId; }
-
-  updateBalances();
+  updateBalance();
   updateTimer();
   setInterval(updateTimer,1000);
 });
-</script>
+                              </script>
