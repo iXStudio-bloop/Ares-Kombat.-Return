@@ -35,7 +35,6 @@
 </style>
 </head>
 <body>
-
 <div class="header">
   <p class="game-title">Ares Kombat</p>
   <p class="game-subtitle">Return</p>
@@ -60,7 +59,6 @@
   </div>
 </div>
 
-<!-- Модалка магазина с чек-окном -->
 <div id="shopModal" class="modal">
   <div class="modal-content" id="shopContent">
     <h2>Магазин</h2>
@@ -69,13 +67,12 @@
       <p>Вы купили: <span id="receiptItem"></span></p>
       <p>Цена: <span id="receiptPrice"></span> 🏆</p>
       <input type="text" id="receiptCode" readonly>
-      <button id="copyReceiptBtn">Скопировать код и отправь пользователю @ares_musical</button>
+      <button id="copyReceiptBtn">Скопировать код и отправь пользователю @Fachionn_Connection_Bot</button>
     </div>
     <button id="closeShopBtn">Закрыть</button>
   </div>
 </div>
 
-<!-- Модалка промокодов -->
 <div id="promoModal" class="modal">
   <div class="modal-content">
     <h2>Промокоды</h2>
@@ -85,16 +82,14 @@
   </div>
 </div>
 
-<!-- Модалка заданий -->
-<div id="tasksModal" class="modal">
-  <div class="modal-content" id="tasksContent">
-    <h2>Задания</h2>
-    <div id="tasksContainer"></div>
-    <button id="closeTasksBtn">Закрыть</button>
+<div id="onceModal" class="modal">
+  <div class="modal-content">
+    <h2>Раз в жизни!</h2>
+    <p>Нажмите, чтобы получить 1000 🏆</p>
+    <button id="claimOnceBtn">Забрать награду</button>
   </div>
 </div>
 
-<!-- Модалка сброса аккаунта -->
 <div id="resetModal" class="modal">
   <div class="modal-content">
     <h2>Сброс аккаунта</h2>
@@ -111,11 +106,13 @@
     <div class="score-display">🏆: <span id="clickerScore">0</span></div>
     <button class="button-main" id="clickerButton">👊 Нажми!</button>
   </div>
+
   <div id="classicView" class="hidden">
     <h2>Классический заработок</h2>
     <button class="button-main" id="earnButton">Забрать 5000 🏆</button>
     <p>Следующая выдача через: <span id="earnTimer">0 ч</span></p>
   </div>
+
   <div id="profileView" class="hidden profile">
     <div><b>Имя:</b> <span id="profileName"></span></div>
     <div><b>Юзернейм:</b> <span id="profileUsername"></span></div>
@@ -125,7 +122,6 @@
     <hr>
     <button id="openShopBtn">Магазин</button>
     <button id="openPromoBtn">Промокоды</button>
-    <button id="openTasksBtn">Задания</button>
     <button id="openResetBtn">Сбросить аккаунт</button>
   </div>
 </div>
@@ -135,252 +131,203 @@
   <button id="tabClassic">Классика</button>
   <button id="tabProfile">Профиль</button>
 </div><script>
-document.addEventListener("DOMContentLoaded", () => {
-  // ===== ПЕРЕМЕННЫЕ =====
-  let score = parseInt(localStorage.getItem("score")) || 0; // единый баланс
-  let lastEarnTime = parseInt(localStorage.getItem("lastEarnTime")) || 0;
-  let name = localStorage.getItem("name");
-  let username = localStorage.getItem("username");
-  let userId = localStorage.getItem("userId");
-  let usedPromos = JSON.parse(localStorage.getItem("usedPromos") || "[]");
+let clickerScore = parseInt(localStorage.getItem("clickerScore")) || 0;
+let classicScore = parseInt(localStorage.getItem("classicScore")) || 0;
+let totalBalance = parseInt(localStorage.getItem("totalBalance")) || 0;
+let lastEarnTime = parseInt(localStorage.getItem("lastEarnTime")) || 0;
+let claimedOnce = localStorage.getItem("claimedOnce") === "true";
 
-  // Элементы
-  const clickerScoreEl = document.getElementById("clickerScore");
-  const clickerButton = document.getElementById("clickerButton");
-  const earnButton = document.getElementById("earnButton");
-  const earnTimer = document.getElementById("earnTimer");
-  const clickerView = document.getElementById("clickerView");
-  const classicView = document.getElementById("classicView");
-  const profileView = document.getElementById("profileView");
-  const tabClicker = document.getElementById("tabClicker");
-  const tabClassic = document.getElementById("tabClassic");
-  const tabProfile = document.getElementById("tabProfile");
-  const registerModal = document.getElementById("registerModal");
-  const registerBtn = document.getElementById("registerBtn");
-  const nameInput = document.getElementById("nameInput");
-  const usernameInput = document.getElementById("usernameInput");
-  const messageModal = document.getElementById("messageModal");
-  const messageText = document.getElementById("messageText");
-  const closeMessageBtn = document.getElementById("closeMessageBtn");
-  const profileName = document.getElementById("profileName");
-  const profileUsername = document.getElementById("profileUsername");
-  const profileId = document.getElementById("profileId");
-  const totalBalanceEl = document.getElementById("totalBalance");
+let username = localStorage.getItem("username") || "";
+let name = localStorage.getItem("name") || "";
+let userId = localStorage.getItem("userId") || ("ID" + Math.floor(Math.random()*1000000));
 
-  const openShopBtn = document.getElementById("openShopBtn");
-  const shopModal = document.getElementById("shopModal");
-  const shopItemsContainer = document.getElementById("shopItemsContainer");
-  const shopReceipt = document.getElementById("shopReceipt");
-  const receiptItem = document.getElementById("receiptItem");
-  const receiptPrice = document.getElementById("receiptPrice");
-  const receiptCode = document.getElementById("receiptCode");
-  const copyReceiptBtn = document.getElementById("copyReceiptBtn");
-  const closeShopBtn = document.getElementById("closeShopBtn");
+document.getElementById("clickerScore").textContent = clickerScore;
+document.getElementById("totalBalance").textContent = totalBalance;
 
-  const openPromoBtn = document.getElementById("openPromoBtn");
-  const promoModal = document.getElementById("promoModal");
-  const promoInput = document.getElementById("promoInput");
-  const applyPromoBtn = document.getElementById("applyPromoBtn");
-  const closePromoBtn = document.getElementById("closePromoBtn");
+if (!username || !name) {
+  document.getElementById("registerModal").style.display = "flex";
+}
 
-  const openTasksBtn = document.getElementById("openTasksBtn");
-  const tasksModal = document.getElementById("tasksModal");
-  const tasksContainer = document.getElementById("tasksContainer");
-  const closeTasksBtn = document.getElementById("closeTasksBtn");
+document.getElementById("registerBtn").onclick = function() {
+  let n = document.getElementById("nameInput").value.trim();
+  let u = document.getElementById("usernameInput").value.trim();
+  if (!n || !u) return;
+  name = n;
+  username = u;
+  localStorage.setItem("name", name);
+  localStorage.setItem("username", username);
+  localStorage.setItem("userId", userId);
+  document.getElementById("profileName").textContent = name;
+  document.getElementById("profileUsername").textContent = username;
+  document.getElementById("profileId").textContent = userId;
+  document.getElementById("registerModal").style.display = "none";
+};
 
-  const resetModal = document.getElementById("resetModal");
-  const openResetBtn = document.getElementById("openResetBtn");
-  const confirmResetBtn = document.getElementById("confirmResetBtn");
-  const cancelResetBtn = document.getElementById("cancelResetBtn");
+document.getElementById("profileName").textContent = name;
+document.getElementById("profileUsername").textContent = username;
+document.getElementById("profileId").textContent = userId;
 
-  // ===== МАГАЗИН =====
-  const shopItems = [
-    { name: "Аватарка от ИИ", price: 3500, code: "AOI" },
-    { name: "Аватарка от ИИ на заказ", price: 5500, code: "AOINZ" },
-    { name: "Обои на телефон", price: 7500, code: "ONT" }
-  ];
+function updateTotal() {
+  totalBalance = clickerScore + classicScore;
+  document.getElementById("totalBalance").textContent = totalBalance;
+  localStorage.setItem("clickerScore", clickerScore);
+  localStorage.setItem("classicScore", classicScore);
+  localStorage.setItem("totalBalance", totalBalance);
+}
 
-  const promos = {
-    "ARESKOMBATSTART": 3000,
-    "AUTUMNKOMBAT25": 4000,
-    "SCHOOLPREMIUM01": 5500
+document.getElementById("clickerButton").onclick = function() {
+  clickerScore++;
+  document.getElementById("clickerScore").textContent = clickerScore;
+  updateTotal();
+};
+
+document.getElementById("earnButton").onclick = function() {
+  let now = Date.now();
+  if (now - lastEarnTime >= 28800000) { // 8 часов
+    classicScore += 5000;
+    lastEarnTime = now;
+    localStorage.setItem("lastEarnTime", lastEarnTime);
+    updateTotal();
+    showMessage("Вы получили 5000 🏆!");
+  } else {
+    showMessage("Слишком рано! Ждите окончания таймера.");
+  }
+};
+
+function updateTimer() {
+  let now = Date.now();
+  let diff = 28800000 - (now - lastEarnTime);
+  if (diff < 0) diff = 0;
+  let hours = Math.floor(diff / 3600000);
+  let mins = Math.floor((diff % 3600000) / 60000);
+  document.getElementById("earnTimer").textContent = hours + " ч " + mins + " м";
+}
+setInterval(updateTimer, 1000);
+updateTimer();
+
+// === Кнопка "1000 раз в жизни" ===
+if (!claimedOnce) {
+  let btn = document.createElement("button");
+  btn.textContent = "1000 🏆 Бонус";
+  btn.id = "openOnceBtn";
+  document.getElementById("profileView").appendChild(btn);
+
+  btn.onclick = function() {
+    document.getElementById("onceModal").style.display = "flex";
   };
 
-  const tasks = [
-    { id: "daily", text: "Получить ежедневный бонус", reward: 1000 }
-  ];
+  document.getElementById("claimOnceBtn").onclick = function() {
+    clickerScore += 1000;
+    updateTotal();
+    localStorage.setItem("claimedOnce", "true");
+    claimedOnce = true;
 
-  // ===== ФУНКЦИИ =====
-  function updateBalance() {
-    clickerScoreEl.textContent = score;
-    totalBalanceEl.textContent = score;
-    localStorage.setItem("score", score);
-  }
-
-  function openModal(text) {
-    messageText.textContent = text;
-    messageModal.style.display = "flex";
-  }
-
-  function showTab(tab) {
-    clickerView.classList.add("hidden");
-    classicView.classList.add("hidden");
-    profileView.classList.add("hidden");
-    tabClicker.classList.remove("active");
-    tabClassic.classList.remove("active");
-    tabProfile.classList.remove("active");
-    if(tab==="clicker"){ clickerView.classList.remove("hidden"); tabClicker.classList.add("active"); }
-    if(tab==="classic"){ classicView.classList.remove("hidden"); tabClassic.classList.add("active"); }
-    if(tab==="profile"){ profileView.classList.remove("hidden"); tabProfile.classList.add("active"); }
-  }
-
-  function updateTimer() {
-    let now = Date.now();
-    let diff = now - lastEarnTime;
-    let wait = 8*60*60*1000; // 8 часов
-    if(diff>=wait){
-      earnButton.disabled = false;
-      earnTimer.textContent = "доступно!";
-    }else{
-      earnButton.disabled = true;
-      let remain = wait-diff;
-      let hours = Math.floor(remain/3600000);
-      let minutes = Math.floor((remain%3600000)/60000);
-      earnTimer.textContent = `${hours}ч ${minutes}м`;
+    let button = document.getElementById("openOnceBtn");
+    if (button) {
+      button.style.transition = "opacity 1s, transform 1s";
+      button.style.opacity = "0";
+      button.style.transform = "scale(0.5) rotate(45deg)";
+      setTimeout(()=>button.remove(), 1000);
     }
-  }
+    document.getElementById("onceModal").style.display = "none";
+  };
+}
 
-  function renderShop() {
-    shopItemsContainer.innerHTML = "";
-    shopItems.forEach(item=>{
-      let btn = document.createElement("button");
-      btn.textContent = `${item.name} - ${item.price} 🏆`;
-      btn.addEventListener("click", ()=>{
-        if(score>=item.price){
-          score -= item.price;
-          updateBalance();
-          receiptItem.textContent = item.name;
-          receiptPrice.textContent = item.price;
-          receiptCode.value = item.code + " @ares_musical";
-          shopReceipt.classList.remove("hidden");
-        } else openModal("Недостаточно кубков!");
-      });
-      shopItemsContainer.appendChild(btn);
-    });
-  }
-
-  copyReceiptBtn.addEventListener("click", ()=>{
-    receiptCode.select();
-    receiptCode.setSelectionRange(0, 99999);
-    document.execCommand("copy");
-    openModal("Код скопирован!");
-  });
-
-  function renderTasks() {
-    tasksContainer.innerHTML = "";
-    tasks.forEach(task=>{
-      let div = document.createElement("div");
-      div.style.margin="5px 0";
-      let text = document.createElement("span");
-      text.textContent = `${task.text} (Награда: ${task.reward} 🏆)`;
-      div.appendChild(text);
-      if(score >= task.reward){
-        let btn = document.createElement("button");
-        btn.textContent = "Забрать";
-        btn.style.marginLeft="10px";
-        btn.addEventListener("click", ()=>{
-          score += task.reward;
-          localStorage.setItem("score", score);
-          updateBalance();
-          div.remove();
-          openModal(`Вы забрали награду: ${task.reward} 🏆`);
-        });
-        div.appendChild(btn);
-      }
-      tasksContainer.appendChild(div);
-    });
-  }
-
-  // ===== СОБЫТИЯ =====
-  clickerButton.addEventListener("click", ()=>{
-    score++;
-    updateBalance();
-  });
-
-  earnButton.addEventListener("click", ()=>{
-    score += 5000;
-    lastEarnTime = Date.now();
-    localStorage.setItem("lastEarnTime", lastEarnTime);
-    updateBalance();
-    updateTimer();
-  });
-
-  tabClicker.addEventListener("click", ()=>showTab("clicker"));
-  tabClassic.addEventListener("click", ()=>showTab("classic"));
-  tabProfile.addEventListener("click", ()=>showTab("profile"));
-
-  closeMessageBtn.addEventListener("click", ()=>messageModal.style.display="none");
-
-  registerBtn.addEventListener("click", ()=>{
-    let enteredName = nameInput.value.trim();
-    let enteredUsername = usernameInput.value.trim();
-    if(!enteredName || !enteredUsername){ openModal("Заполните все поля!"); return; }
-    name = enteredName;
-    username = enteredUsername;
-    userId = Math.floor(Math.random()*1000000);
-    localStorage.setItem("name", name);
-    localStorage.setItem("username", username);
-    localStorage.setItem("userId", userId);
-    profileName.textContent = name;
-    profileUsername.textContent = username;
-    profileId.textContent = userId;
-    registerModal.style.display="none";
-  });
-
-  openShopBtn.addEventListener("click", ()=>{
-    renderShop();
-    shopModal.style.display="flex";
-  });
-  closeShopBtn.addEventListener("click", ()=>shopModal.style.display="none");
-
-  openPromoBtn.addEventListener("click", ()=>promoModal.style.display="flex");
-  closePromoBtn.addEventListener("click", ()=>promoModal.style.display="none");
-
-  applyPromoBtn.addEventListener("click", ()=>{
-    let code = promoInput.value.trim();
-    if(promos[code]){
-      if(usedPromos.includes(code)){ openModal("Этот промокод уже использован!"); return; }
-      score += promos[code];
-      usedPromos.push(code);
-      localStorage.setItem("usedPromos", JSON.stringify(usedPromos));
-      updateBalance();
-      openModal(`Вы активировали промокод "${code}" и получили ${promos[code]} 🏆!`);
-    } else openModal("Неверный промокод!");
-  });
-
-  openTasksBtn.addEventListener("click", ()=>{
-    renderTasks();
-    tasksModal.style.display="flex";
-  });
-  closeTasksBtn.addEventListener("click", ()=>tasksModal.style.display="none");
-
-  openResetBtn.addEventListener("click", ()=>resetModal.style.display="flex");
-  cancelResetBtn.addEventListener("click", ()=>resetModal.style.display="none");
-  confirmResetBtn.addEventListener("click", ()=>{
-    localStorage.clear();
-    location.reload();
-  });
-
-  // ===== ИНИЦИАЛИЗАЦИЯ =====
-  if(!name || !username || !userId){ registerModal.style.display="flex"; }
-  else {
-    profileName.textContent = name;
-    profileUsername.textContent = username;
-    profileId.textContent = userId;
-  }
-
-  updateBalance();
-  updateTimer();
-  setInterval(updateTimer,1000);
+// === Магазин ===
+let shopItems = [
+  {name: "Аватарка от ИИ", price: 35000, code:"AOI"},
+  {name: "Аватарка на заказ", price: 50000, code:"AOINZ"},
+  {name: "Обои", price: 20000, code:"ONT"}
+];
+let shopContainer = document.getElementById("shopItemsContainer");
+shopItems.forEach(item=>{
+  let b = document.createElement("button");
+  b.textContent = `${item.name} - ${item.price} 🏆`;
+  b.onclick = function(){
+    if (totalBalance >= item.price){
+      clickerScore -= item.price;
+      updateTotal();
+      let code = item.code + "-" + Math.floor(Math.random()*1000000);
+      document.getElementById("receiptItem").textContent = item.name;
+      document.getElementById("receiptPrice").textContent = item.price;
+      document.getElementById("receiptCode").value = code;
+      document.getElementById("shopReceipt").classList.remove("hidden");
+      showMessage("Вы успешно купили " + item.name + "!");
+      document.getElementById("shopModal").style.display = "none";
+    } else {
+      showMessage("Недостаточно 🏆!");
+    }
+  };
+  shopContainer.appendChild(b);
 });
-                              </script>
+
+document.getElementById("copyReceiptBtn").onclick = function(){
+  let input = document.getElementById("receiptCode");
+  input.select();
+  document.execCommand("copy");
+  showMessage("Код скопирован!");
+};
+
+document.getElementById("openShopBtn").onclick = ()=>document.getElementById("shopModal").style.display="flex";
+document.getElementById("closeShopBtn").onclick = ()=>document.getElementById("shopModal").style.display="none";
+
+// === Промокоды ===
+let promoCodes = {
+  "ARESKOMBATSTART":10000,
+  "ARESKOMBATPREM1":7000,
+  "KOMBATBONUS2025":5000,
+  "AKTEST6":1000000
+};
+let usedPromos = JSON.parse(localStorage.getItem("usedPromos")||"[]");
+
+document.getElementById("applyPromoBtn").onclick = function(){
+  let code = document.getElementById("promoInput").value.trim();
+  if (promoCodes[code] && !usedPromos.includes(code)){
+    clickerScore += promoCodes[code];
+    updateTotal();
+    usedPromos.push(code);
+    localStorage.setItem("usedPromos", JSON.stringify(usedPromos));
+    showMessage("Промокод активирован! +" + promoCodes[code] + " 🏆");
+    document.getElementById("promoModal").style.display="none";
+  } else {
+    showMessage("Неверный или уже использован.");
+  }
+};
+
+document.getElementById("openPromoBtn").onclick = ()=>document.getElementById("promoModal").style.display="flex";
+document.getElementById("closePromoBtn").onclick = ()=>document.getElementById("promoModal").style.display="none";
+
+// === Сброс аккаунта ===
+document.getElementById("openResetBtn").onclick = ()=>document.getElementById("resetModal").style.display="flex";
+document.getElementById("confirmResetBtn").onclick = function(){
+  localStorage.clear();
+  location.reload();
+};
+document.getElementById("cancelResetBtn").onclick = ()=>document.getElementById("resetModal").style.display="none";
+
+// === Сообщения ===
+function showMessage(text){
+  document.getElementById("messageText").textContent=text;
+  document.getElementById("messageModal").style.display="flex";
+}
+document.getElementById("closeMessageBtn").onclick = ()=>document.getElementById("messageModal").style.display="none";
+
+// Навигация
+function showView(v){
+  document.getElementById("clickerView").classList.add("hidden");
+  document.getElementById("classicView").classList.add("hidden");
+  document.getElementById("profileView").classList.add("hidden");
+  document.getElementById(v).classList.remove("hidden");
+  document.getElementById("tabClicker").classList.remove("active");
+  document.getElementById("tabClassic").classList.remove("active");
+  document.getElementById("tabProfile").classList.remove("active");
+  if (v==="clickerView") document.getElementById("tabClicker").classList.add("active");
+  if (v==="classicView") document.getElementById("tabClassic").classList.add("active");
+  if (v==="profileView") document.getElementById("tabProfile").classList.add("active");
+}
+document.getElementById("tabClicker").onclick = ()=>showView("clickerView");
+document.getElementById("tabClassic").onclick = ()=>showView("classicView");
+document.getElementById("tabProfile").onclick = ()=>showView("profileView");
+</script>
+</body>
+  </html>
