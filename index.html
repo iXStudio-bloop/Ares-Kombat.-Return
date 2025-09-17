@@ -130,13 +130,14 @@
   <button id="tabClicker" class="active">Кликер</button>
   <button id="tabClassic">Классика</button>
   <button id="tabProfile">Профиль</button>
-</div><script>
+</div>
+
+<script>
 let clickerScore = parseInt(localStorage.getItem("clickerScore")) || 0;
 let classicScore = parseInt(localStorage.getItem("classicScore")) || 0;
 let totalBalance = parseInt(localStorage.getItem("totalBalance")) || 0;
 let lastEarnTime = parseInt(localStorage.getItem("lastEarnTime")) || 0;
 let claimedOnce = localStorage.getItem("claimedOnce") === "true";
-
 let username = localStorage.getItem("username") || "";
 let name = localStorage.getItem("name") || "";
 let userId = localStorage.getItem("userId") || ("ID" + Math.floor(Math.random()*1000000));
@@ -173,17 +174,37 @@ function updateTotal() {
   localStorage.setItem("clickerScore", clickerScore);
   localStorage.setItem("classicScore", classicScore);
   localStorage.setItem("totalBalance", totalBalance);
-}
+}// === Кликер с лимитом и антиавтоклик ===
+let clickTimestamps = [];
 
 document.getElementById("clickerButton").onclick = function() {
+  let now = Date.now();
+
+  // Считаем клики в последние 1000 мс
+  clickTimestamps = clickTimestamps.filter(t => now - t < 1000);
+  clickTimestamps.push(now);
+
+  if (clickTimestamps.length > 10) { // более 10 кликов/сек
+    clickerScore = 0;
+    updateTotal();
+    showMessage("Антиавтоклик! Счёт обнулён!");
+    return;
+  }
+
+  if (clickerScore >= 10000) {
+    showMessage("Достигнут дневной лимит кликов (10 000)!");
+    return;
+  }
+
   clickerScore++;
   document.getElementById("clickerScore").textContent = clickerScore;
   updateTotal();
 };
 
+// === Классический заработок (каждые 6 часов) ===
 document.getElementById("earnButton").onclick = function() {
   let now = Date.now();
-  if (now - lastEarnTime >= 28800000) { // 8 часов
+  if (now - lastEarnTime >= 21600000) { // 6 часов
     classicScore += 5000;
     lastEarnTime = now;
     localStorage.setItem("lastEarnTime", lastEarnTime);
@@ -196,7 +217,7 @@ document.getElementById("earnButton").onclick = function() {
 
 function updateTimer() {
   let now = Date.now();
-  let diff = 28800000 - (now - lastEarnTime);
+  let diff = 21600000 - (now - lastEarnTime); // 6 часов
   if (diff < 0) diff = 0;
   let hours = Math.floor(diff / 3600000);
   let mins = Math.floor((diff % 3600000) / 60000);
@@ -239,12 +260,13 @@ let shopItems = [
   {name: "Аватарка на заказ", price: 50000, code:"AOINZ"},
   {name: "Обои", price: 20000, code:"ONT"}
 ];
+
 let shopContainer = document.getElementById("shopItemsContainer");
-shopItems.forEach(item=>{
+shopItems.forEach(item => {
   let b = document.createElement("button");
   b.textContent = `${item.name} - ${item.price} 🏆`;
-  b.onclick = function(){
-    if (totalBalance >= item.price){
+  b.onclick = function() {
+    if (totalBalance >= item.price) {
       clickerScore -= item.price;
       updateTotal();
       let code = item.code + "-" + Math.floor(Math.random()*1000000);
@@ -261,7 +283,7 @@ shopItems.forEach(item=>{
   shopContainer.appendChild(b);
 });
 
-document.getElementById("copyReceiptBtn").onclick = function(){
+document.getElementById("copyReceiptBtn").onclick = function() {
   let input = document.getElementById("receiptCode");
   input.select();
   document.execCommand("copy");
@@ -280,9 +302,9 @@ let promoCodes = {
 };
 let usedPromos = JSON.parse(localStorage.getItem("usedPromos")||"[]");
 
-document.getElementById("applyPromoBtn").onclick = function(){
+document.getElementById("applyPromoBtn").onclick = function() {
   let code = document.getElementById("promoInput").value.trim();
-  if (promoCodes[code] && !usedPromos.includes(code)){
+  if (promoCodes[code] && !usedPromos.includes(code)) {
     clickerScore += promoCodes[code];
     updateTotal();
     usedPromos.push(code);
@@ -299,7 +321,7 @@ document.getElementById("closePromoBtn").onclick = ()=>document.getElementById("
 
 // === Сброс аккаунта ===
 document.getElementById("openResetBtn").onclick = ()=>document.getElementById("resetModal").style.display="flex";
-document.getElementById("confirmResetBtn").onclick = function(){
+document.getElementById("confirmResetBtn").onclick = function() {
   localStorage.clear();
   location.reload();
 };
@@ -312,7 +334,7 @@ function showMessage(text){
 }
 document.getElementById("closeMessageBtn").onclick = ()=>document.getElementById("messageModal").style.display="none";
 
-// Навигация
+// === Навигация ===
 function showView(v){
   document.getElementById("clickerView").classList.add("hidden");
   document.getElementById("classicView").classList.add("hidden");
@@ -330,4 +352,4 @@ document.getElementById("tabClassic").onclick = ()=>showView("classicView");
 document.getElementById("tabProfile").onclick = ()=>showView("profileView");
 </script>
 </body>
-  </html>
+</html>
