@@ -5,33 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ares Kombat. Return</title>
 <style>
-  body, html {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: #1a1a1a;
-    color: #fff;
-    height: 100%;
-    overflow: hidden;
-  }
-  .header { text-align: center; padding: 15px 0 5px 0; }
-  .game-title { font-size: 36px; font-weight: bold; margin: 0; }
-  .game-subtitle { font-size: 32px; font-weight: bold; margin: 0; }
-  .content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: calc(100% - 120px); padding: 10px; text-align: center; }
-  .section-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-  .score-display { font-size: 36px; font-weight: bold; margin-bottom: 30px; }
-  .bottom-menu { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: space-around; background: #111; padding: 10px 0; }
-  .bottom-menu button { background: #333; border: none; padding: 10px 20px; color: #fff; font-size: 16px; border-radius: 10px; cursor: pointer; }
-  .bottom-menu button.active { background: #ffcc00; color: #000; font-weight: bold; }
-  .hidden { display: none; }
-  .profile div { margin: 5px 0; }
-  .profile button { padding: 8px 16px; margin: 5px; border: none; border-radius: 10px; background: #555; color: #fff; font-size: 14px; cursor: pointer; }
-  .button-main { font-size: 30px; padding: 20px 40px; border-radius: 20px; background: #444; color: #fff; border: none; margin-top: 10px; cursor: pointer; }
-  .button-main:active { background: #666; }
-  .modal { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 100; }
-  .modal-content { background: #222; padding: 20px; border-radius: 15px; text-align: center; width: 90%; max-width: 350px; }
-  .modal-content input { width: 80%; padding: 10px; margin: 10px 0; border-radius: 10px; border: none; text-align: center; }
-  .modal-content button { padding: 10px 20px; border-radius: 10px; border: none; background: #555; color: #fff; font-size: 16px; margin-top: 10px; cursor: pointer; }
+  body, html { margin:0; padding:0; font-family:Arial,sans-serif; background:#1a1a1a; color:#fff; height:100%; overflow:hidden; }
+  .header{text-align:center;padding:15px 0 5px 0;}
+  .game-title{font-size:36px;font-weight:bold;margin:0;}
+  .game-subtitle{font-size:32px;font-weight:bold;margin:0;}
+  .content{display:flex;flex-direction:column;justify-content:center;align-items:center;height:calc(100% - 120px);padding:10px;text-align:center;}
+  .section-title{font-size:28px;font-weight:bold;margin-bottom:10px;}
+  .score-display{font-size:36px;font-weight:bold;margin-bottom:30px;}
+  .bottom-menu{position:fixed;bottom:20px;left:0;width:100%;display:flex;justify-content:space-around;background:#111;padding:10px 0;}
+  .bottom-menu button{background:#333;border:none;padding:10px 20px;color:#fff;font-size:16px;border-radius:10px;cursor:pointer;}
+  .bottom-menu button.active{background:#ffcc00;color:#000;font-weight:bold;}
+  .hidden{display:none;}
+  .profile div{margin:5px 0;}
+  .profile button{padding:8px 16px;margin:5px;border:none;border-radius:10px;background:#555;color:#fff;font-size:14px;cursor:pointer;}
+  .button-main{font-size:30px;padding:20px 40px;border-radius:20px;background:#444;color:#fff;border:none;margin-top:10px;cursor:pointer;}
+  .button-main:active{background:#666;}
+  .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:100;}
+  .modal-content{background:#222;padding:20px;border-radius:15px;text-align:center;width:90%;max-width:350px;}
+  .modal-content input{width:80%;padding:10px;margin:10px 0;border-radius:10px;border:none;text-align:center;}
+  .modal-content button{padding:10px 20px;border-radius:10px;border:none;background:#555;color:#fff;font-size:16px;margin-top:10px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -131,8 +123,8 @@
   <button id="tabClassic">Классика</button>
   <button id="tabProfile">Профиль</button>
 </div>
-
 <script>
+// === Переменные ===
 let clickerScore = parseInt(localStorage.getItem("clickerScore")) || 0;
 let classicScore = parseInt(localStorage.getItem("classicScore")) || 0;
 let totalBalance = parseInt(localStorage.getItem("totalBalance")) || 0;
@@ -140,21 +132,21 @@ let lastEarnTime = parseInt(localStorage.getItem("lastEarnTime")) || 0;
 let claimedOnce = localStorage.getItem("claimedOnce") === "true";
 let username = localStorage.getItem("username") || "";
 let name = localStorage.getItem("name") || "";
-let userId = localStorage.getItem("userId") || ("ID" + Math.floor(Math.random()*1000000));
+let userId = localStorage.getItem("userId") || ("ID"+Math.floor(Math.random()*1000000));
+let clickTimestamps = [];
+let banEnd = parseInt(localStorage.getItem("banEnd")) || 0;
 
+// === Инициализация ===
 document.getElementById("clickerScore").textContent = clickerScore;
 document.getElementById("totalBalance").textContent = totalBalance;
 
-if (!username || !name) {
-  document.getElementById("registerModal").style.display = "flex";
-}
+if (!username || !name) document.getElementById("registerModal").style.display = "flex";
 
 document.getElementById("registerBtn").onclick = function() {
   let n = document.getElementById("nameInput").value.trim();
   let u = document.getElementById("usernameInput").value.trim();
   if (!n || !u) return;
-  name = n;
-  username = u;
+  name = n; username = u;
   localStorage.setItem("name", name);
   localStorage.setItem("username", username);
   localStorage.setItem("userId", userId);
@@ -168,34 +160,49 @@ document.getElementById("profileName").textContent = name;
 document.getElementById("profileUsername").textContent = username;
 document.getElementById("profileId").textContent = userId;
 
+// === Обновление баланса ===
 function updateTotal() {
   totalBalance = clickerScore + classicScore;
   document.getElementById("totalBalance").textContent = totalBalance;
   localStorage.setItem("clickerScore", clickerScore);
   localStorage.setItem("classicScore", classicScore);
   localStorage.setItem("totalBalance", totalBalance);
-}// === Кликер с лимитом и антиавтоклик ===
-let clickTimestamps = [];
+}
 
+// === Сообщения ===
+function showMessage(text){document.getElementById("messageText").textContent=text;document.getElementById("messageModal").style.display="flex";}
+document.getElementById("closeMessageBtn").onclick=()=>document.getElementById("messageModal").style.display="none";// === Кликер с антиавтокликом и баном на 3 дня ===
 document.getElementById("clickerButton").onclick = function() {
   let now = Date.now();
 
-  // Считаем клики в последние 1000 мс
+  // Проверка бана
+  if (banEnd && now < banEnd) {
+    let diff = banEnd - now;
+    let d = Math.floor(diff/86400000);
+    let h = Math.floor((diff%86400000)/3600000);
+    let m = Math.floor((diff%3600000)/60000);
+    showMessage(`Вы забанены за автоклик! Осталось: ${d} д ${h} ч ${m} м`);
+    return;
+  } else if (banEnd && now >= banEnd) {
+    // Снятие бана, сброс данных
+    localStorage.clear();
+    location.reload();
+    return;
+  }
+
+  // Антиавтоклик: больше 10 кликов в секунду
   clickTimestamps = clickTimestamps.filter(t => now - t < 1000);
   clickTimestamps.push(now);
-
-  if (clickTimestamps.length > 10) { // более 10 кликов/сек
-    clickerScore = 0;
-    updateTotal();
-    showMessage("Антиавтоклик! Счёт обнулён!");
+  if (clickTimestamps.length > 10) {
+    banEnd = now + 3*24*3600000; // 3 дня
+    localStorage.setItem("banEnd", banEnd);
+    showMessage("Автоклик обнаружен! Аккаунт заблокирован на 3 дня и сброшен.");
+    localStorage.clear();
+    location.reload();
     return;
   }
 
-  if (clickerScore >= 10000) {
-    showMessage("Достигнут дневной лимит кликов (10 000)!");
-    return;
-  }
-
+  // Нормальный клик
   clickerScore++;
   document.getElementById("clickerScore").textContent = clickerScore;
   updateTotal();
@@ -204,135 +211,117 @@ document.getElementById("clickerButton").onclick = function() {
 // === Классический заработок (каждые 6 часов) ===
 document.getElementById("earnButton").onclick = function() {
   let now = Date.now();
-  if (now - lastEarnTime >= 21600000) { // 6 часов
+  if (banEnd && now < banEnd) {
+    showMessage("Вы забанены! Не можете использовать игру.");
+    return;
+  }
+
+  if (now - lastEarnTime >= 21600000) {
     classicScore += 5000;
     lastEarnTime = now;
     localStorage.setItem("lastEarnTime", lastEarnTime);
     updateTotal();
     showMessage("Вы получили 5000 🏆!");
-  } else {
-    showMessage("Слишком рано! Ждите окончания таймера.");
-  }
+  } else showMessage("Слишком рано! Ждите окончания таймера.");
 };
 
 function updateTimer() {
   let now = Date.now();
-  let diff = 21600000 - (now - lastEarnTime); // 6 часов
+  let diff = 21600000 - (now - lastEarnTime);
   if (diff < 0) diff = 0;
-  let hours = Math.floor(diff / 3600000);
-  let mins = Math.floor((diff % 3600000) / 60000);
-  document.getElementById("earnTimer").textContent = hours + " ч " + mins + " м";
+  let h = Math.floor(diff/3600000);
+  let m = Math.floor((diff%3600000)/60000);
+  document.getElementById("earnTimer").textContent = h + " ч " + m + " м";
 }
-setInterval(updateTimer, 1000);
+setInterval(updateTimer,1000);
 updateTimer();
 
-// === Кнопка "1000 раз в жизни" ===
+// === Бонус 1000 раз в жизни ===
 if (!claimedOnce) {
   let btn = document.createElement("button");
   btn.textContent = "1000 🏆 Бонус";
   btn.id = "openOnceBtn";
   document.getElementById("profileView").appendChild(btn);
-
-  btn.onclick = function() {
-    document.getElementById("onceModal").style.display = "flex";
-  };
+  btn.onclick = ()=>document.getElementById("onceModal").style.display="flex";
 
   document.getElementById("claimOnceBtn").onclick = function() {
+    if (banEnd && Date.now() < banEnd) {
+      showMessage("Вы забанены! Не можете получить бонус.");
+      return;
+    }
     clickerScore += 1000;
     updateTotal();
-    localStorage.setItem("claimedOnce", "true");
     claimedOnce = true;
-
+    localStorage.setItem("claimedOnce","true");
     let button = document.getElementById("openOnceBtn");
-    if (button) {
-      button.style.transition = "opacity 1s, transform 1s";
-      button.style.opacity = "0";
-      button.style.transform = "scale(0.5) rotate(45deg)";
-      setTimeout(()=>button.remove(), 1000);
-    }
-    document.getElementById("onceModal").style.display = "none";
+    if(button){button.style.transition="opacity 1s, transform 1s"; button.style.opacity="0"; button.style.transform="scale(0.5) rotate(45deg)"; setTimeout(()=>button.remove(),1000);}
+    document.getElementById("onceModal").style.display="none";
   };
 }
 
 // === Магазин ===
 let shopItems = [
-  {name: "Аватарка от ИИ", price: 35000, code:"AOI"},
-  {name: "Аватарка на заказ", price: 50000, code:"AOINZ"},
-  {name: "Обои", price: 20000, code:"ONT"}
+  {name:"Аватарка от ИИ", price:35000, code:"AOI"},
+  {name:"Аватарка на заказ", price:50000, code:"AOINZ"},
+  {name:"Обои", price:20000, code:"ONT"}
 ];
-
 let shopContainer = document.getElementById("shopItemsContainer");
-shopItems.forEach(item => {
-  let b = document.createElement("button");
-  b.textContent = `${item.name} - ${item.price} 🏆`;
-  b.onclick = function() {
-    if (totalBalance >= item.price) {
-      clickerScore -= item.price;
+shopItems.forEach(item=>{
+  let b=document.createElement("button");
+  b.textContent=`${item.name} - ${item.price} 🏆`;
+  b.onclick=function(){
+    if(banEnd && Date.now() < banEnd){showMessage("Вы забанены! Не можете использовать магазин."); return;}
+    if(totalBalance>=item.price){
+      clickerScore-=item.price;
       updateTotal();
-      let code = item.code + "-" + Math.floor(Math.random()*1000000);
-      document.getElementById("receiptItem").textContent = item.name;
-      document.getElementById("receiptPrice").textContent = item.price;
-      document.getElementById("receiptCode").value = code;
+      let code=item.code+"-"+Math.floor(Math.random()*1000000);
+      document.getElementById("receiptItem").textContent=item.name;
+      document.getElementById("receiptPrice").textContent=item.price;
+      document.getElementById("receiptCode").value=code;
       document.getElementById("shopReceipt").classList.remove("hidden");
-      showMessage("Вы успешно купили " + item.name + "!");
-      document.getElementById("shopModal").style.display = "none";
-    } else {
-      showMessage("Недостаточно 🏆!");
-    }
+      showMessage("Вы успешно купили "+item.name+"!");
+      document.getElementById("shopModal").style.display="none";
+    } else showMessage("Недостаточно 🏆!");
   };
   shopContainer.appendChild(b);
 });
 
-document.getElementById("copyReceiptBtn").onclick = function() {
-  let input = document.getElementById("receiptCode");
-  input.select();
-  document.execCommand("copy");
-  showMessage("Код скопирован!");
-};
-
-document.getElementById("openShopBtn").onclick = ()=>document.getElementById("shopModal").style.display="flex";
-document.getElementById("closeShopBtn").onclick = ()=>document.getElementById("shopModal").style.display="none";
+document.getElementById("copyReceiptBtn").onclick=function(){let input=document.getElementById("receiptCode");input.select();document.execCommand("copy");showMessage("Код скопирован!");};
+document.getElementById("openShopBtn").onclick=()=>document.getElementById("shopModal").style.display="flex";
+document.getElementById("closeShopBtn").onclick=()=>document.getElementById("shopModal").style.display="none";
 
 // === Промокоды ===
 let promoCodes = {
   "ARESKOMBATSTART":10000,
   "ARESKOMBATPREM1":7000,
   "KOMBATBONUS2025":5000,
-  "AKTEST6":1000000
+  "AKTEST6":1000000,
+  "ARESKOMBATNEW1":3000,
+  "PREMIUMKOM2025":5000,
+  "KOMBATGOLD2025":6000,
+  "KOMBATSILVER2025":4000
 };
 let usedPromos = JSON.parse(localStorage.getItem("usedPromos")||"[]");
 
-document.getElementById("applyPromoBtn").onclick = function() {
-  let code = document.getElementById("promoInput").value.trim();
-  if (promoCodes[code] && !usedPromos.includes(code)) {
-    clickerScore += promoCodes[code];
+document.getElementById("applyPromoBtn").onclick=function(){
+  let code=document.getElementById("promoInput").value.trim();
+  if(banEnd && Date.now() < banEnd){showMessage("Вы забанены! Не можете использовать промокоды."); return;}
+  if(promoCodes[code]&&!usedPromos.includes(code)){
+    clickerScore+=promoCodes[code];
     updateTotal();
     usedPromos.push(code);
-    localStorage.setItem("usedPromos", JSON.stringify(usedPromos));
+    localStorage.setItem("usedPromos",JSON.stringify(usedPromos));
     showMessage("Промокод активирован! +" + promoCodes[code] + " 🏆");
     document.getElementById("promoModal").style.display="none";
-  } else {
-    showMessage("Неверный или уже использован.");
-  }
+  } else showMessage("Неверный или уже использован.");
 };
-
-document.getElementById("openPromoBtn").onclick = ()=>document.getElementById("promoModal").style.display="flex";
-document.getElementById("closePromoBtn").onclick = ()=>document.getElementById("promoModal").style.display="none";
+document.getElementById("openPromoBtn").onclick=()=>document.getElementById("promoModal").style.display="flex";
+document.getElementById("closePromoBtn").onclick=()=>document.getElementById("promoModal").style.display="none";
 
 // === Сброс аккаунта ===
-document.getElementById("openResetBtn").onclick = ()=>document.getElementById("resetModal").style.display="flex";
-document.getElementById("confirmResetBtn").onclick = function() {
-  localStorage.clear();
-  location.reload();
-};
-document.getElementById("cancelResetBtn").onclick = ()=>document.getElementById("resetModal").style.display="none";
-
-// === Сообщения ===
-function showMessage(text){
-  document.getElementById("messageText").textContent=text;
-  document.getElementById("messageModal").style.display="flex";
-}
-document.getElementById("closeMessageBtn").onclick = ()=>document.getElementById("messageModal").style.display="none";
+document.getElementById("openResetBtn").onclick=()=>document.getElementById("resetModal").style.display="flex";
+document.getElementById("confirmResetBtn").onclick=function(){localStorage.clear();location.reload();};
+document.getElementById("cancelResetBtn").onclick=()=>document.getElementById("resetModal").style.display="none";
 
 // === Навигация ===
 function showView(v){
@@ -343,13 +332,13 @@ function showView(v){
   document.getElementById("tabClicker").classList.remove("active");
   document.getElementById("tabClassic").classList.remove("active");
   document.getElementById("tabProfile").classList.remove("active");
-  if (v==="clickerView") document.getElementById("tabClicker").classList.add("active");
-  if (v==="classicView") document.getElementById("tabClassic").classList.add("active");
-  if (v==="profileView") document.getElementById("tabProfile").classList.add("active");
+  if(v==="clickerView")document.getElementById("tabClicker").classList.add("active");
+  if(v==="classicView")document.getElementById("tabClassic").classList.add("active");
+  if(v==="profileView")document.getElementById("tabProfile").classList.add("active");
 }
-document.getElementById("tabClicker").onclick = ()=>showView("clickerView");
-document.getElementById("tabClassic").onclick = ()=>showView("classicView");
-document.getElementById("tabProfile").onclick = ()=>showView("profileView");
+document.getElementById("tabClicker").onclick=()=>showView("clickerView");
+document.getElementById("tabClassic").onclick=()=>showView("classicView");
+document.getElementById("tabProfile").onclick=()=>showView("profileView");
 </script>
 </body>
 </html>
