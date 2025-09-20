@@ -122,8 +122,7 @@
   <button id="tabClicker" class="active">Кликер</button>
   <button id="tabClassic">Классика</button>
   <button id="tabProfile">Профиль</button>
-</div>
-<script>
+</div><script>
 // === Переменные ===
 let clickerScore = parseInt(localStorage.getItem("clickerScore")) || 0;
 let classicScore = parseInt(localStorage.getItem("classicScore")) || 0;
@@ -170,12 +169,16 @@ function updateTotal() {
 }
 
 // === Сообщения ===
-function showMessage(text){document.getElementById("messageText").textContent=text;document.getElementById("messageModal").style.display="flex";}
-document.getElementById("closeMessageBtn").onclick=()=>document.getElementById("messageModal").style.display="none";// === Кликер с антиавтокликом и баном на 3 дня ===
+function showMessage(text){
+  document.getElementById("messageText").textContent=text;
+  document.getElementById("messageModal").style.display="flex";
+}
+document.getElementById("closeMessageBtn").onclick=()=>document.getElementById("messageModal").style.display="none";
+
+// === Кликер с антиавтокликом и баном на 3 дня ===
 document.getElementById("clickerButton").onclick = function() {
   let now = Date.now();
 
-  // Проверка бана
   if (banEnd && now < banEnd) {
     let diff = banEnd - now;
     let d = Math.floor(diff/86400000);
@@ -184,25 +187,20 @@ document.getElementById("clickerButton").onclick = function() {
     showMessage(`Вы забанены за автоклик! Осталось: ${d} д ${h} ч ${m} м`);
     return;
   } else if (banEnd && now >= banEnd) {
-    // Снятие бана, сброс данных
-    localStorage.clear();
+    ["clickerScore","classicScore","totalBalance","lastEarnTime","claimedOnce","usedPromos","banEnd"].forEach(k=>localStorage.removeItem(k));
     location.reload();
     return;
   }
 
-  // Антиавтоклик: больше 10 кликов в секунду
   clickTimestamps = clickTimestamps.filter(t => now - t < 1000);
   clickTimestamps.push(now);
   if (clickTimestamps.length > 10) {
-    banEnd = now + 3*24*3600000; // 3 дня
+    banEnd = now + 3*24*3600000;
     localStorage.setItem("banEnd", banEnd);
-    showMessage("Автоклик обнаружен! Аккаунт заблокирован на 3 дня и сброшен.");
-    localStorage.clear();
-    location.reload();
+    showMessage("Автоклик обнаружен! Аккаунт заблокирован на 3 дня.");
     return;
   }
 
-  // Нормальный клик
   clickerScore++;
   document.getElementById("clickerScore").textContent = clickerScore;
   updateTotal();
@@ -211,10 +209,7 @@ document.getElementById("clickerButton").onclick = function() {
 // === Классический заработок (каждые 6 часов) ===
 document.getElementById("earnButton").onclick = function() {
   let now = Date.now();
-  if (banEnd && now < banEnd) {
-    showMessage("Вы забанены! Не можете использовать игру.");
-    return;
-  }
+  if (banEnd && now < banEnd) { showMessage("Вы забанены! Не можете использовать игру."); return; }
 
   if (now - lastEarnTime >= 21600000) {
     classicScore += 5000;
@@ -245,10 +240,7 @@ if (!claimedOnce) {
   btn.onclick = ()=>document.getElementById("onceModal").style.display="flex";
 
   document.getElementById("claimOnceBtn").onclick = function() {
-    if (banEnd && Date.now() < banEnd) {
-      showMessage("Вы забанены! Не можете получить бонус.");
-      return;
-    }
+    if (banEnd && Date.now() < banEnd) { showMessage("Вы забанены! Не можете получить бонус."); return; }
     clickerScore += 1000;
     updateTotal();
     claimedOnce = true;
@@ -286,20 +278,26 @@ shopItems.forEach(item=>{
   shopContainer.appendChild(b);
 });
 
-document.getElementById("copyReceiptBtn").onclick=function(){let input=document.getElementById("receiptCode");input.select();document.execCommand("copy");showMessage("Код скопирован!");};
+document.getElementById("copyReceiptBtn").onclick=function(){
+  let input=document.getElementById("receiptCode");
+  input.select();
+  document.execCommand("copy");
+  showMessage("Код скопирован!");
+};
 document.getElementById("openShopBtn").onclick=()=>document.getElementById("shopModal").style.display="flex";
 document.getElementById("closeShopBtn").onclick=()=>document.getElementById("shopModal").style.display="none";
 
 // === Промокоды ===
 let promoCodes = {
-  "ARESKOMBATSTART":10000,
-  "ARESKOMBATPREM1":7000,
-  "KOMBATBONUS2025":5000,
   "AKTEST6":1000000,
   "ARESKOMBATNEW1":3000,
   "PREMIUMKOM2025":5000,
   "KOMBATGOLD2025":6000,
-  "KOMBATSILVER2025":4000
+  "KOMBATSILVER2025":4000,
+  "ARESKOMBATVOICE":20000,
+  "ARESKOMBAT00001":3000,
+  "ARESKOMBAT00002":5000,
+  "ARESKOMPREM0001":7000
 };
 let usedPromos = JSON.parse(localStorage.getItem("usedPromos")||"[]");
 
@@ -336,6 +334,7 @@ function showView(v){
   if(v==="classicView")document.getElementById("tabClassic").classList.add("active");
   if(v==="profileView")document.getElementById("tabProfile").classList.add("active");
 }
+
 document.getElementById("tabClicker").onclick=()=>showView("clickerView");
 document.getElementById("tabClassic").onclick=()=>showView("classicView");
 document.getElementById("tabProfile").onclick=()=>showView("profileView");
