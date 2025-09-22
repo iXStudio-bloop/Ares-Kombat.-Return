@@ -122,7 +122,9 @@
   <button id="tabClicker" class="active">Кликер</button>
   <button id="tabClassic">Классика</button>
   <button id="tabProfile">Профиль</button>
-</div><script>
+</div>
+
+<script>
 // === Переменные ===
 let clickerScore = parseInt(localStorage.getItem("clickerScore")) || 0;
 let classicScore = parseInt(localStorage.getItem("classicScore")) || 0;
@@ -290,10 +292,6 @@ document.getElementById("closeShopBtn").onclick=()=>document.getElementById("sho
 // === Промокоды ===
 let promoCodes = {
   "AKTEST6":1000000,
-  "ARESKOMBATNEW1":3000,
-  "PREMIUMKOM2025":5000,
-  "KOMBATGOLD2025":6000,
-  "KOMBATSILVER2025":4000,
   "ARESKOMBATVOICE":20000,
   "ARESKOMBAT00001":3000,
   "ARESKOMBAT00002":5000,
